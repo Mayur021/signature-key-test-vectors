@@ -27,15 +27,22 @@ def b64u(s): return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
 def B64(b): return base64.urlsafe_b64encode(b).decode().rstrip("=")
 
 # ---------------------------------------------------------------- 1. thumbprint
-REQUIRED_MEMBERS = {"EC": ["crv", "kty", "x", "y"], "OKP": ["crv", "kty", "x"],
-                    "RSA": ["e", "kty", "n"]}
+# Lift thumbprint() out of gen_vectors.py rather than reimplementing it. The
+# jkt-jwt vector's iss is the RFC 7638 thumbprint of its own header JWK, so this
+# has to exercise the function that BUILT the vectors. A second copy here would
+# agree with itself and prove nothing. gen_vectors.py runs on import, so the
+# function is extracted by text rather than imported.
+def _load_thumbprint():
+    src = open(os.path.join(os.path.dirname(HERE), "gen_vectors.py")).read()
+    start = src.index("def thumbprint(")
+    end = src.index("\n# ", start)
+    ns = {}
+    exec("import base64, hashlib, json\n"
+         "B64 = lambda b: base64.urlsafe_b64encode(b).decode().rstrip('=')\n"
+         + src[start:end], ns)
+    return ns["thumbprint"]
 
-def thumbprint(jwk, alg="sha256"):
-    req = REQUIRED_MEMBERS[jwk["kty"]]
-    canon = json.dumps({k: jwk[k] for k in req}, separators=(",", ":"),
-                       sort_keys=True)
-    h = hashlib.sha256 if alg == "sha256" else hashlib.sha512
-    return B64(h(canon.encode()).digest())
+thumbprint = _load_thumbprint()
 
 def run_thumbprint(d):
     bad = 0
