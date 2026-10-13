@@ -59,7 +59,7 @@ def jws(header: dict, payload: dict, signer, kind: str) -> str:
     if kind == "Ed25519":
         sig = signer.sign(seg.encode())
     else:
-        der = signer.sign(seg.encode(), ec.ECDSA(hashes.SHA256()))
+        der = signer.sign(seg.encode(), ec.ECDSA(hashes.SHA256(), deterministic_signing=True))
         r, s = decode_dss_signature(der)
         sig = r.to_bytes(32, "big") + s.to_bytes(32, "big")
     return seg + "." + B64(sig)
@@ -82,7 +82,7 @@ def sign_base(base, signer, kind):
     if kind == "Ed25519":
         sig = signer.sign(base.encode())
     else:
-        der = signer.sign(base.encode(), ec.ECDSA(hashes.SHA256()))
+        der = signer.sign(base.encode(), ec.ECDSA(hashes.SHA256(), deterministic_signing=True))
         r, s = decode_dss_signature(der)
         sig = r.to_bytes(32, "big") + s.to_bytes(32, "big")
     return base64.b64encode(sig).decode()
@@ -489,6 +489,21 @@ def mldsa_from_seed(seed: bytes):
 
 pq_pk, pq_sk, pq_jwk, pq_priv = mldsa_from_seed(b"aauth-sigkey-vectors/mldsa-44/v1")
 
+# FIPS 204 hedged signing draws rnd from an RBG, which would make the published
+# file differ on every run. Feed it a fixed stream instead. The signature stays
+# a genuine hedged signature, with a non-zero rnd; it is only the GENERATOR that
+# becomes deterministic. That is not the same as the vector being
+# reproduce-the-bytes: another signer's rnd differs, so it stays category 2.
+_pq_stream = hashlib.sha256(b"aauth-sigkey-vectors/mldsa-44/rnd/v1").digest()
+def _fixed_random(n: int) -> bytes:
+    out = b""
+    ctr = 0
+    while len(out) < n:
+        out += hashlib.sha256(_pq_stream + ctr.to_bytes(4, "big")).digest()
+        ctr += 1
+    return out[:n]
+ML_DSA_44.random_bytes = staticmethod(_fixed_random)
+
 AKP_NOTE = (f"ML-DSA-44 key, {len(pq_pk)} byte public value per FIPS 204, carried "
             f"as the AKP key type of RFC 9964 with the algorithm named by alg "
             f"rather than derivable from the key structure.")
@@ -761,7 +776,7 @@ def verify_one(v):
                     ec.SECP256R1())
                 der = encode_dss_signature(int.from_bytes(sig[:32], "big"),
                                            int.from_bytes(sig[32:], "big"))
-                nums.public_key().verify(der, base, ec.ECDSA(hashes.SHA256()))
+                nums.public_key().verify(der, base, ec.ECDSA(hashes.SHA256(), deterministic_signing=True))
             results.append((label, True))
         except InvalidSignature:
             results.append((label, False))

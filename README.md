@@ -32,9 +32,21 @@ draft states a MUST or a MUST NOT, the negative vector names the section it came
 from, so a disagreement is a disagreement about the text rather than about whose
 code is right.
 
-Keys come from fixed seeds and every vector declares `now`, so the set is
-reproducible and does not go stale. Private keys are included, which is what
-lets someone regenerate a vector rather than trust it.
+Keys come from fixed seeds and every vector declares `now`, so the set
+regenerates identically and does not go stale. Private keys are included, which
+is what lets someone regenerate a vector rather than trust it. Running the
+generator twice produces byte-identical files, which is checked rather than
+asserted.
+
+Getting there needed two deliberate choices, and they are worth separating from
+what the vectors claim. ECDSA signing here is the deterministic variant of
+RFC 6979, and the hedged ML-DSA signature is produced from a fixed `rnd` stream
+rather than an RBG. **That makes the generator deterministic. It does not make
+those vectors reproduce-the-bytes vectors.** Another signer picks a different
+`k` or a different `rnd` and produces a different, equally valid signature, so
+they stay category 2 and a suite must still verify them rather than diff them.
+The two kinds of determinism are easy to conflate and conflating them is how a
+conformance suite ends up asserting the wrong thing.
 
 ## The caveat in #25
 

@@ -105,8 +105,8 @@ Expected headers:
 ~~~ http-message
 Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
-Signature: sig=:sF4WOVhAYtU77Jf/TevaIss/b8iaB8VCguMuWsdIDRGuAQcNCo5M4\
-YsDiK43Qus58clFiXzJQF30b/ZuxVAfyA==:
+Signature: sig=:wDRxvcpQIgyTra54wBL3PfeU4eXL/kUfLJOKHTUuQkKWBA4wG2V+5\
+0BFmKTxYIpP0aS5rtbJcXzreWrFsCXm0A==:
 Signature-Key: sig=hwk;kty="EC";crv="P-256";x="LhnFCX9JWOQhInaap65wwL\
 3rcT49WyvQSlIhMLO8lr4";y="PEr4OX8tM8oHdcYMrbeIQhl58q5XxkVG28CJQ8tS618\
 ";alg="ES256"
@@ -153,11 +153,11 @@ pEcmNtTzJVS2RQa0tIeDlwaVJxN3JBYTRCamFHYlRjbERzQ3MiLCJ5Ijoia2lYOU8ycVN\
 TnpQWE9VYldELWNWeFAwOCIsImlhdCI6MTc5MTI3NTg5OCwiZXhwIjoxNzkxMzYyMzU4L\
 CJjbmYiOnsiandrIjp7Imt0eSI6Ik9LUCIsImNydiI6IkVkMjU1MTkiLCJ4IjoiZkZXR1\
 NUSDdTTjFnb2w5MTFPRXJxMXNQRlhUX0xBRzI2ekJ0TG04SXRLMCIsImFsZyI6IkVkMjU\
-1MTkifX19.VOzqQQcSy3bHHoseWEpcL4NgUhYIzAcf_fe1m8KTo33d66v-cjvTSqW2O2H\
-VmxSWqZkXR1p8-LhS5X-J3GYgsw"
+1MTkifX19.Je6-Fm6Q8i-xxg8Vn5NMHmQCEBnMmydCKnudroeSL7do_EWL9-rpsY4YxzM\
+3jnTG054bIdWEmV_Bv1gyUH5WFQ"
 ~~~
 
-Signature base (810 bytes, SHA-256 `eae9be40a59801fe9b95bfea7faca8f83d3437230285323418088b51ea5387f8`):
+Signature base (810 bytes, SHA-256 `8b4e92f69a04eb46a573c8cdba4deb5aaf6822a8560b00311d29d2c24d8235ec`):
 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
@@ -173,8 +173,8 @@ VN5VWd1RnlQR0NBaTBJN3RkV1A0eTJGV2tFVjR3cmE2Q3IyZyIsImFsZyI6IkVTMjU2In\
 cxTnpQWE9VYldELWNWeFAwOCIsImlhdCI6MTc5MTI3NTg5OCwiZXhwIjoxNzkxMzYyMzU\
 4LCJjbmYiOnsiandrIjp7Imt0eSI6Ik9LUCIsImNydiI6IkVkMjU1MTkiLCJ4IjoiZkZX\
 R1NUSDdTTjFnb2w5MTFPRXJxMXNQRlhUX0xBRzI2ekJ0TG04SXRLMCIsImFsZyI6IkVkM\
-jU1MTkifX19.VOzqQQcSy3bHHoseWEpcL4NgUhYIzAcf_fe1m8KTo33d66v-cjvTSqW2O\
-2HVmxSWqZkXR1p8-LhS5X-J3GYgsw"
+jU1MTkifX19.Je6-Fm6Q8i-xxg8Vn5NMHmQCEBnMmydCKnudroeSL7do_EWL9-rpsY4Yx\
+zM3jnTG054bIdWEmV_Bv1gyUH5WFQ"
 "@signature-params": ("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
 ~~~
@@ -184,8 +184,8 @@ Expected headers:
 ~~~ http-message
 Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
-Signature: sig=:eh1RaHTZqqDiTOl/g/aGlf90PwOk4TV1TYYYubFoSHn1N5D7fMZUp\
-mfAuzuG8q75TDovTnmCa3ThElk8xfMODQ==:
+Signature: sig=:nr8y8ybFpY4P8fEzFmp9CZsv0+bu36myjN7XlEDmNMEvtIAP2rsyX\
+49EJNaAW6chfGjMNs9zs2cq7g5Kz4HLAw==:
 Signature-Key: sig=jkt-jwt;jwt="eyJ0eXAiOiJqa3QtczI1Nitqd3QiLCJhbGciO\
 iJFUzI1NiIsImp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6ImhSX01YOF\
 pEcmNtTzJVS2RQa0tIeDlwaVJxN3JBYTRCamFHYlRjbERzQ3MiLCJ5Ijoia2lYOU8ycVN\
@@ -194,8 +194,8 @@ pEcmNtTzJVS2RQa0tIeDlwaVJxN3JBYTRCamFHYlRjbERzQ3MiLCJ5Ijoia2lYOU8ycVN\
 TnpQWE9VYldELWNWeFAwOCIsImlhdCI6MTc5MTI3NTg5OCwiZXhwIjoxNzkxMzYyMzU4L\
 CJjbmYiOnsiandrIjp7Imt0eSI6Ik9LUCIsImNydiI6IkVkMjU1MTkiLCJ4IjoiZkZXR1\
 NUSDdTTjFnb2w5MTFPRXJxMXNQRlhUX0xBRzI2ekJ0TG04SXRLMCIsImFsZyI6IkVkMjU\
-1MTkifX19.VOzqQQcSy3bHHoseWEpcL4NgUhYIzAcf_fe1m8KTo33d66v-cjvTSqW2O2H\
-VmxSWqZkXR1p8-LhS5X-J3GYgsw"
+1MTkifX19.Je6-Fm6Q8i-xxg8Vn5NMHmQCEBnMmydCKnudroeSL7do_EWL9-rpsY4YxzM\
+3jnTG054bIdWEmV_Bv1gyUH5WFQ"
 ~~~
 
 Key material (private key included so the vector can be regenerated):
@@ -223,7 +223,7 @@ Delegation JWT:
 
 ~~~ json
 {
-  "compact": "eyJ0eXAiOiJqa3QtczI1Nitqd3QiLCJhbGciOiJFUzI1NiIsImp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6ImhSX01YOFpEcmNtTzJVS2RQa0tIeDlwaVJxN3JBYTRCamFHYlRjbERzQ3MiLCJ5Ijoia2lYOU8ycVN5VWd1RnlQR0NBaTBJN3RkV1A0eTJGV2tFVjR3cmE2Q3IyZyIsImFsZyI6IkVTMjU2In19.eyJpc3MiOiJ1cm46amt0OnNoYS0yNTY6dnVwUUZMNlV2TWtzTjNrYXJnaWtYeWtVRDcxTnpQWE9VYldELWNWeFAwOCIsImlhdCI6MTc5MTI3NTg5OCwiZXhwIjoxNzkxMzYyMzU4LCJjbmYiOnsiandrIjp7Imt0eSI6Ik9LUCIsImNydiI6IkVkMjU1MTkiLCJ4IjoiZkZXR1NUSDdTTjFnb2w5MTFPRXJxMXNQRlhUX0xBRzI2ekJ0TG04SXRLMCIsImFsZyI6IkVkMjU1MTkifX19.VOzqQQcSy3bHHoseWEpcL4NgUhYIzAcf_fe1m8KTo33d66v-cjvTSqW2O2HVmxSWqZkXR1p8-LhS5X-J3GYgsw",
+  "compact": "eyJ0eXAiOiJqa3QtczI1Nitqd3QiLCJhbGciOiJFUzI1NiIsImp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6ImhSX01YOFpEcmNtTzJVS2RQa0tIeDlwaVJxN3JBYTRCamFHYlRjbERzQ3MiLCJ5Ijoia2lYOU8ycVN5VWd1RnlQR0NBaTBJN3RkV1A0eTJGV2tFVjR3cmE2Q3IyZyIsImFsZyI6IkVTMjU2In19.eyJpc3MiOiJ1cm46amt0OnNoYS0yNTY6dnVwUUZMNlV2TWtzTjNrYXJnaWtYeWtVRDcxTnpQWE9VYldELWNWeFAwOCIsImlhdCI6MTc5MTI3NTg5OCwiZXhwIjoxNzkxMzYyMzU4LCJjbmYiOnsiandrIjp7Imt0eSI6Ik9LUCIsImNydiI6IkVkMjU1MTkiLCJ4IjoiZkZXR1NUSDdTTjFnb2w5MTFPRXJxMXNQRlhUX0xBRzI2ekJ0TG04SXRLMCIsImFsZyI6IkVkMjU1MTkifX19.Je6-Fm6Q8i-xxg8Vn5NMHmQCEBnMmydCKnudroeSL7do_EWL9-rpsY4YxzM3jnTG054bIdWEmV_Bv1gyUH5WFQ",
   "header": {
     "typ": "jkt-s256+jwt",
     "alg": "ES256",
@@ -445,12 +445,12 @@ zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
 zIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImNuZiI6eyJqd2siOnsi\
 a3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9Fc\
-nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.L6yxeGTrDj\
-rtxkBL8yVyK_c3d7ZQ0Bywm6pwa0koBwkqBlQf8CxYnjX2-MgHQlLrNB6hHz03XfLQf_n\
-Ml_MMqw"
+nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.9EDfI3wYwO\
+M7jnXhz-wVw8fxtPeiIi_dLHmjOFajgugNgEmEZv4dx-Su7QJvZ2jt5e2hWiaGm6CyfXw\
+Kv92ZMQ"
 ~~~
 
-Signature base (652 bytes, SHA-256 `95b3271f9cdbc0a714d2a6f56d415f14ba41d994e702aa8aa69a57c028c68c1a`):
+Signature base (652 bytes, SHA-256 `6d68fca717889571ac8ec9da4a0ec528ebaf45858756b98d1afc8e88eac8ce6d`):
 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
@@ -463,9 +463,9 @@ FUzI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFt\
 cGxlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtM\
 TIzIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImNuZiI6eyJqd2siOn\
 sia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9\
-FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.L6yxeGTr\
-DjrtxkBL8yVyK_c3d7ZQ0Bywm6pwa0koBwkqBlQf8CxYnjX2-MgHQlLrNB6hHz03XfLQf\
-_nMl_MMqw"
+FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.9EDfI3wY\
+wOM7jnXhz-wVw8fxtPeiIi_dLHmjOFajgugNgEmEZv4dx-Su7QJvZ2jt5e2hWiaGm6Cyf\
+XwKv92ZMQ"
 "@signature-params": ("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
 ~~~
@@ -475,16 +475,16 @@ Expected headers:
 ~~~ http-message
 Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
-Signature: sig=:1HxBKx3RIAZZq3kNTu5uI/t+SRIULoC9jOdDlBKWjLqNASjkVyKrb\
-MAtGebndchE/5YYJkErft02o4kTVm0hCg==:
+Signature: sig=:tohikJXpgmix2BgDkBXvlTcQiTFFH+t251J8aQI9qNG9pVfJ4F/+J\
+WVajDb8Tafx3vN/v2tv+0DCCtVSKoyYAw==:
 Signature-Key: sig=jwt;jwt="eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFU\
 zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
 zIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImNuZiI6eyJqd2siOnsi\
 a3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9Fc\
-nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.L6yxeGTrDj\
-rtxkBL8yVyK_c3d7ZQ0Bywm6pwa0koBwkqBlQf8CxYnjX2-MgHQlLrNB6hHz03XfLQf_n\
-Ml_MMqw"
+nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.9EDfI3wYwO\
+M7jnXhz-wVw8fxtPeiIi_dLHmjOFajgugNgEmEZv4dx-Su7QJvZ2jt5e2hWiaGm6CyfXw\
+Kv92ZMQ"
 ~~~
 
 Key material (private key included so the vector can be regenerated):
@@ -512,7 +512,7 @@ Assertion JWT:
 
 ~~~ json
 {
-  "compact": "eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFUzI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcGxlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTIzIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImNuZiI6eyJqd2siOnsia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.L6yxeGTrDjrtxkBL8yVyK_c3d7ZQ0Bywm6pwa0koBwkqBlQf8CxYnjX2-MgHQlLrNB6hHz03XfLQf_nMl_MMqw",
+  "compact": "eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFUzI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcGxlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTIzIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImNuZiI6eyJqd2siOnsia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.9EDfI3wYwOM7jnXhz-wVw8fxtPeiIi_dLHmjOFajgugNgEmEZv4dx-Su7QJvZ2jt5e2hWiaGm6CyfXwKv92ZMQ",
   "header": {
     "typ": "aa-token+jwt",
     "alg": "ES256",
@@ -585,12 +585,12 @@ xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
 zIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImp0aSI6IjRmMWE5Yzdl\
 LTJiNjAtNGUyYS05ZjNkLTdjMWIwNWU4YTQxMiIsImNuZiI6eyJqd2siOnsia3R5IjoiT\
 0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWF\
-RfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.BIWrcFkw_98kLIQ88bZ\
-WvAbGl8uzQlYbR2EIto9O5sXsaTjbF0ueFR56BTnAnSLqZNcnOTw5XEuBvWO0VZd8mg";\
+RfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.pd5MN-y2qpHrmoLoqXO\
+q5hv2pdLEIpqyoP4I8jLI6bc1MrXvu3aqDvX2Gcwdr_JOMeAgM3asCDG1vV6d2uRZow";\
 cache
 ~~~
 
-Signature base (718 bytes, SHA-256 `e6b4e994efc6ff5e6698e4fcf3fe45a17bf9021f1aee738b8136b26637b4cc50`):
+Signature base (718 bytes, SHA-256 `6cd37f4bb06a720a0fa6dd47f3ad2ec6a19f563a23fad71273b47f5e8daf69bb`):
 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
@@ -604,8 +604,8 @@ cGxlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtM\
 TIzIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImp0aSI6IjRmMWE5Yz\
 dlLTJiNjAtNGUyYS05ZjNkLTdjMWIwNWU4YTQxMiIsImNuZiI6eyJqd2siOnsia3R5Ijo\
 iT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BG\
-WFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.BIWrcFkw_98kLIQ88\
-bZWvAbGl8uzQlYbR2EIto9O5sXsaTjbF0ueFR56BTnAnSLqZNcnOTw5XEuBvWO0VZd8mg\
+WFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.pd5MN-y2qpHrmoLoq\
+XOq5hv2pdLEIpqyoP4I8jLI6bc1MrXvu3aqDvX2Gcwdr_JOMeAgM3asCDG1vV6d2uRZow\
 ";cache
 "@signature-params": ("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
@@ -616,16 +616,16 @@ Expected headers:
 ~~~ http-message
 Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
-Signature: sig=:G0DkIRPiTpJJals+kbFTDHr5HE+3FNYlXLDUGN3FN8C+fKLgwEjnV\
-J0VSY1jL/2xJe6Q+OoUTvrLGUaYRYhFDA==:
+Signature: sig=:ZJwv+sER0VhoaCPDcUr/HmLb2mvTMthfOCbNpwVvAoKaKf0BnD8Va\
+n9VYPi1WNWVIQDJJbAnIEgLDVFXzGnOCA==:
 Signature-Key: sig=jwt;jwt="eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFU\
 zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
 zIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImp0aSI6IjRmMWE5Yzdl\
 LTJiNjAtNGUyYS05ZjNkLTdjMWIwNWU4YTQxMiIsImNuZiI6eyJqd2siOnsia3R5IjoiT\
 0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWF\
-RfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.BIWrcFkw_98kLIQ88bZ\
-WvAbGl8uzQlYbR2EIto9O5sXsaTjbF0ueFR56BTnAnSLqZNcnOTw5XEuBvWO0VZd8mg";\
+RfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.pd5MN-y2qpHrmoLoqXO\
+q5hv2pdLEIpqyoP4I8jLI6bc1MrXvu3aqDvX2Gcwdr_JOMeAgM3asCDG1vV6d2uRZow";\
 cache
 ~~~
 
@@ -654,7 +654,7 @@ Assertion JWT:
 
 ~~~ json
 {
-  "compact": "eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFUzI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcGxlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTIzIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImp0aSI6IjRmMWE5YzdlLTJiNjAtNGUyYS05ZjNkLTdjMWIwNWU4YTQxMiIsImNuZiI6eyJqd2siOnsia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.BIWrcFkw_98kLIQ88bZWvAbGl8uzQlYbR2EIto9O5sXsaTjbF0ueFR56BTnAnSLqZNcnOTw5XEuBvWO0VZd8mg",
+  "compact": "eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFUzI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcGxlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTIzIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzk1NTgsImp0aSI6IjRmMWE5YzdlLTJiNjAtNGUyYS05ZjNkLTdjMWIwNWU4YTQxMiIsImNuZiI6eyJqd2siOnsia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.pd5MN-y2qpHrmoLoqXOq5hv2pdLEIpqyoP4I8jLI6bc1MrXvu3aqDvX2Gcwdr_JOMeAgM3asCDG1vV6d2uRZow",
   "jti": "4f1a9c7e-2b60-4e2a-9f3d-7c1b05e8a412",
   "issuer_private_jwk": {
     "kty": "EC",
@@ -681,11 +681,11 @@ Signature-Key: sig=self-jwt;jwt="eyJhbGciOiJFUzI1NiIsImtpZCI6InIxIiwi\
 dHlwIjoiYWEtZXZlbnQrand0In0.eyJpc3MiOiJodHRwczovL3Jlc291cmNlLmV4YW1wb\
 GUiLCJkd2siOiJhYXV0aC1yZXNvdXJjZS5qc29uIiwic3ViIjoicmVzb3VyY2UtaW5zdG\
 FuY2UtNyIsImF1ZCI6Imh0dHBzOi8vY2xpZW50LmV4YW1wbGUiLCJpYXQiOjE3OTEyNzU\
-4OTgsImV4cCI6MTc5MTI3NjI1OH0.z2SPEXnsUOoLJ-bO06SnGmyNbZNzRPePy1DK6MoD\
-LppCDm501KkDd1-E-srRRAsqv9yVm4Sa9f1gMq4B9c0QZA"
+4OTgsImV4cCI6MTc5MTI3NjI1OH0.fhQJOSelti52qp2iBtOyctzTBAk4Y88eGIUfhyPq\
+ujY6HQDLcFi5F20nsFW0buOSpFZvE_7kJ3OBUWNf7ytPCQ"
 ~~~
 
-Signature base (553 bytes, SHA-256 `a825885e35828998eca9d69d4ab7a559fd1665be8231ef08a6534ed4e114784e`):
+Signature base (553 bytes, SHA-256 `43ba0aa47d92ae0f0cf08966bbc38829de915d3f9e0502a6fb39e9845b2ad5af`):
 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
@@ -697,8 +697,8 @@ NOTE: '\' line wrapping per RFC 8792
 widHlwIjoiYWEtZXZlbnQrand0In0.eyJpc3MiOiJodHRwczovL3Jlc291cmNlLmV4YW1\
 wbGUiLCJkd2siOiJhYXV0aC1yZXNvdXJjZS5qc29uIiwic3ViIjoicmVzb3VyY2UtaW5z\
 dGFuY2UtNyIsImF1ZCI6Imh0dHBzOi8vY2xpZW50LmV4YW1wbGUiLCJpYXQiOjE3OTEyN\
-zU4OTgsImV4cCI6MTc5MTI3NjI1OH0.z2SPEXnsUOoLJ-bO06SnGmyNbZNzRPePy1DK6M\
-oDLppCDm501KkDd1-E-srRRAsqv9yVm4Sa9f1gMq4B9c0QZA"
+zU4OTgsImV4cCI6MTc5MTI3NjI1OH0.fhQJOSelti52qp2iBtOyctzTBAk4Y88eGIUfhy\
+PqujY6HQDLcFi5F20nsFW0buOSpFZvE_7kJ3OBUWNf7ytPCQ"
 "@signature-params": ("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
 ~~~
@@ -708,14 +708,14 @@ Expected headers:
 ~~~ http-message
 Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
-Signature: sig=:zBdIx9OM4aeF+tMRejtIQ+ilDF7kqPJTHM60h4i/3KfnjrSlS2o2f\
-agLpzT0hhNQllb6wofFIbINuAbxYhqPaQ==:
+Signature: sig=:ZoM6l/LZOzslbaPLzTbT/aoZ63P5dq5E/xfvWvJB0BSDRlm6JPoJf\
+bCBEFu3WmWS0T7s7Z0XraCvYBeDIOGpcg==:
 Signature-Key: sig=self-jwt;jwt="eyJhbGciOiJFUzI1NiIsImtpZCI6InIxIiwi\
 dHlwIjoiYWEtZXZlbnQrand0In0.eyJpc3MiOiJodHRwczovL3Jlc291cmNlLmV4YW1wb\
 GUiLCJkd2siOiJhYXV0aC1yZXNvdXJjZS5qc29uIiwic3ViIjoicmVzb3VyY2UtaW5zdG\
 FuY2UtNyIsImF1ZCI6Imh0dHBzOi8vY2xpZW50LmV4YW1wbGUiLCJpYXQiOjE3OTEyNzU\
-4OTgsImV4cCI6MTc5MTI3NjI1OH0.z2SPEXnsUOoLJ-bO06SnGmyNbZNzRPePy1DK6MoD\
-LppCDm501KkDd1-E-srRRAsqv9yVm4Sa9f1gMq4B9c0QZA"
+4OTgsImV4cCI6MTc5MTI3NjI1OH0.fhQJOSelti52qp2iBtOyctzTBAk4Y88eGIUfhyPq\
+ujY6HQDLcFi5F20nsFW0buOSpFZvE_7kJ3OBUWNf7ytPCQ"
 ~~~
 
 Key material (private key included so the vector can be regenerated):
@@ -747,7 +747,7 @@ Assertion JWT:
 
 ~~~ json
 {
-  "compact": "eyJhbGciOiJFUzI1NiIsImtpZCI6InIxIiwidHlwIjoiYWEtZXZlbnQrand0In0.eyJpc3MiOiJodHRwczovL3Jlc291cmNlLmV4YW1wbGUiLCJkd2siOiJhYXV0aC1yZXNvdXJjZS5qc29uIiwic3ViIjoicmVzb3VyY2UtaW5zdGFuY2UtNyIsImF1ZCI6Imh0dHBzOi8vY2xpZW50LmV4YW1wbGUiLCJpYXQiOjE3OTEyNzU4OTgsImV4cCI6MTc5MTI3NjI1OH0.z2SPEXnsUOoLJ-bO06SnGmyNbZNzRPePy1DK6MoDLppCDm501KkDd1-E-srRRAsqv9yVm4Sa9f1gMq4B9c0QZA",
+  "compact": "eyJhbGciOiJFUzI1NiIsImtpZCI6InIxIiwidHlwIjoiYWEtZXZlbnQrand0In0.eyJpc3MiOiJodHRwczovL3Jlc291cmNlLmV4YW1wbGUiLCJkd2siOiJhYXV0aC1yZXNvdXJjZS5qc29uIiwic3ViIjoicmVzb3VyY2UtaW5zdGFuY2UtNyIsImF1ZCI6Imh0dHBzOi8vY2xpZW50LmV4YW1wbGUiLCJpYXQiOjE3OTEyNzU4OTgsImV4cCI6MTc5MTI3NjI1OH0.fhQJOSelti52qp2iBtOyctzTBAk4Y88eGIUfhyPqujY6HQDLcFi5F20nsFW0buOSpFZvE_7kJ3OBUWNf7ytPCQ",
   "header": {
     "alg": "ES256",
     "kid": "r1",
@@ -888,53 +888,53 @@ Expected headers:
 ~~~ http-message
 Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
-Signature: sig=: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\
+Signature: sig=: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\
 =:
 Signature-Key: sig=jwks;url="https://client.example/pq.jwks";kid="pq-\
 1"
@@ -1214,8 +1214,8 @@ dHlwIjoiYWEtZXZlbnQrand0In0.eyJpc3MiOiJodHRwczovL3Jlc291cmNlLmV4YW1wb\
 GUiLCJkd2siOiJhYXV0aC1yZXNvdXJjZS5qc29uIiwiaWF0IjoxNzkxMjc1ODk4LCJleH\
 AiOjE3OTEyNzYyNTgsImNuZiI6eyJqd2siOnsia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTU\
 xOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEsw\
-IiwiYWxnIjoiRWQyNTUxOSJ9fX0.NNP52V-HYGsDhSqHFp79FWToftN9cXBtuBwcqx4ok\
-haCvHCmQJgNhOC5EWP8bZ5O-Hppie25Ao-6O528DVEPlg"
+IiwiYWxnIjoiRWQyNTUxOSJ9fX0.Y-3-usLcf-R4aQhkaFvfLeFgRCVOPsXje7W4NQ1Kj\
+VVTxNveDvKJ7yGaCeZt5XoT92VXZhCYt7E4MPRJPo0eWw"
 ~~~
 
 ### A.12.9 jwks_uri-issuer-mismatch
@@ -1435,8 +1435,8 @@ zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
 zIiwiaWF0IjoxNzkxMjc1ODk4LCJjbmYiOnsiandrIjp7Imt0eSI6Ik9LUCIsImNydiI6\
 IkVkMjU1MTkiLCJ4IjoiZkZXR1NUSDdTTjFnb2w5MTFPRXJxMXNQRlhUX0xBRzI2ekJ0T\
-G04SXRLMCIsImFsZyI6IkVkMjU1MTkifX19.8B9nbcL7uapV5de-7as3cSYwikAix63Nz\
-qpiWTDWqK8Tq4UYhagXtzFoqy2ocGtNCNP48eujwlyZf87MPxWddQ"
+G04SXRLMCIsImFsZyI6IkVkMjU1MTkifX19.lZZ7tD1verNHfWEwaXDmUwM-_dspAQWfj\
+Ml3WavhYwvVisSu16tcoWmIowT_W3N8xxDFn0pW4QX7qhgPQXuidA"
 ~~~
 
 ### A.12.18 jwt-expired-one-second-before-now
@@ -1453,9 +1453,9 @@ zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
 zIiwiaWF0IjoxNzkxMjcyMzU4LCJleHAiOjE3OTEyNzU5NTcsImNuZiI6eyJqd2siOnsi\
 a3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9Fc\
-nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.JAtusms7B5\
-zjE3wd40Iggo-sgPaXHbUSxTooQB3KhzA6-oC3kDkXo1AX1lvudRXF_6YwYdCkSfAmJdM\
-hISZpKQ"
+nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.6LbOtes7QU\
+c4xkhwryHeh2IPo_G2LnSDkmfZiIf9XGRRxm-YSf7XH8iqmNJFnuaegb9yXOdhGP3Jr0b\
+YRwUV5A"
 ~~~
 
 ### A.12.19 jwt-exp-300s-after-now-MUST-ACCEPT
@@ -1472,9 +1472,9 @@ zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
 zIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzYyNTgsImNuZiI6eyJqd2siOnsi\
 a3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9Fc\
-nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.0e4A66d4CO\
-rsRRX2MQ-HY9oxh4S5m1d_CEZke81OF0HWySkM-hrnjBo-DuzRY1Wcy70pl6Gl1YNzyy8\
-oMiH3lg"
+nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.DpNFpgJrf_\
+gz5ErzK42NZ2D_zx1ND4F0nVImvciZtfGWVmztXoGFMU4R1y__QbagrYBY3BTHrOhduGj\
+yVf8mRQ"
 ~~~
 
 ### A.12.20 jwt-iat-one-hour-after-now-is-clock-skew
@@ -1491,8 +1491,8 @@ zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
 zIiwiaWF0IjoxNzkxMjc5NTU4LCJleHAiOjE3OTEyODMxNTgsImNuZiI6eyJqd2siOnsi\
 a3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9Fc\
-nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.xvviLvsLmR\
-6PmwvXXY5BtH7gBLCOrSSDVMNZ_AQdfQFcHD6JCdG2_ARPdZf1gX9o7RIvmcsIuptL1Wj\
-CiP4g9w"
+nExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.4LhkNMU5dE\
+IxwTBrbjqpzCVTC2VxVkeq93gd9BEOIZjdn_llkZyjj3T_bkKBgYxstW_DtQoXwP0gbpH\
+gMiVISQ"
 ~~~
 
