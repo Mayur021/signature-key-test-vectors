@@ -216,6 +216,11 @@ against whichever of the two is wanted.
 
 ## Licence
 
-Dedicated to the public domain under [CC0 1.0](LICENSE), and offered for
-inclusion in `draft-hardt-httpbis-signature-key` under the terms of BCP 78. Test
-vectors are only useful if nobody has to think about whether they may use them.
+Not yet stated, and that is deliberate rather than an omission. The intent is a
+public domain dedication, so that anything here can be lifted into the draft
+without an attribution question, and offered for inclusion in
+`draft-hardt-httpbis-signature-key` under the terms of BCP 78. Test vectors are
+only useful if nobody has to think about whether they may use them.
+
+Until the file lands, treat this as permission asked for rather than granted,
+and open an issue if that blocks you.
