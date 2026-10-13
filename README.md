@@ -23,7 +23,7 @@ crypto.
 | `test-vectors-appendix.md` | the same set as a draft appendix, RFC 8792 wrapped, in the style of RFC 9421 Appendix B |
 | `served/` | the 11 `.well-known` metadata documents and JWKS the discovery schemes resolve, laid out by host and path |
 | `gen_vectors.py` | the generator, so every value can be regenerated and nothing has to be taken on faith |
-| `harness/` | an independent verifier for the vectors already in `aauth-dev/aauth-go` |
+| `harness/` | an independent verifier for every vector already in `aauth-dev/aauth-go` |
 
 ## Derivation
 
@@ -61,14 +61,45 @@ Both were done, in that order and for that reason.
 
 Deriving the vectors from the draft text means the generator is not a second
 opinion about an implementation, it is a reading of the specification. And the
-existing `aauth-go` fixtures were re-verified first, by `harness/`, which
-reconstructs every signature base from the request and the published
-`Signature-Input` and then re-verifies each signature:
+existing `aauth-go` fixtures were re-verified first, by the verifier in
+`harness/`, written from the same spec text and run over the whole corpus
+rather than the signature-key subset:
 
 | Fixture | Cases | Result |
 |---|---|---|
-| `http-signature.json` | 13 | 13/13 |
+| `jwk-thumbprint.json` | 3 | 3/3 |
+| `server-identifier.json` | 13 | 13/13 |
+| `agent-identifier.json` | 20 | 20/20 |
+| `jwt.json` | 14 | 14/14 |
+| `metadata.json` | 4 | 4/4, structural only |
+| `requirement.json` | 8 | 8/8 |
+| `signature-error.json` | 10 | 10/10 |
 | `signature-key.json` | 9 | 9/9 |
+| `http-signature.json` | 13 | 13/13 |
+| | **94** | **94/94** |
+
+Two of those deserve their caveats stated rather than buried.
+
+`metadata.json` is described as documents that round-trip through their Go
+types, which is not something this harness can reproduce. Its 4/4 is against
+structural checks instead: `issuer` present and a valid server identifier,
+`jwks_uri` present where the document type needs it, every `_uri` and
+`_endpoint` member HTTPS, and a clean JSON round-trip. That is a weaker
+assertion than the one the fixture makes.
+
+`requirement.json` passes only once the harness accepts a space after the
+parameter semicolon as canonical. RFC 9651 Section 4.1.1.2 appends `;` with the
+key following directly, and the single space belongs between dictionary members
+(Section 4.1.2), so the canonical flags on the spaced and unspaced forms look
+inverted. It is raised as a question upstream rather than treated as a defect,
+since the AAuth protocol draft may define its own serialization for that
+header.
+
+`jwk-thumbprint.json` is the load-bearing one for this set. The `jkt-jwt`
+vector's `iss` is the RFC 7638 thumbprint of its own header JWK, so the test
+runs `thumbprint()` out of `gen_vectors.py` itself rather than a copy. A wrong
+function there would have produced a wrong vector with nothing else in the set
+catching it.
 
 One thing that re-verification is worth stating on its own. Signature
 verification alone does not catch a swapped body: the signature covers the
@@ -195,12 +226,24 @@ signature in the set against its own published base and exits non-zero if any
 fails. It also refuses to build if two vectors ever claim one discovery path
 with different documents, which the served tree cannot represent.
 
-To re-verify the `aauth-go` fixtures:
+To re-verify the `aauth-go` fixtures, point the harness at a checkout of
+`aauth-dev/aauth-go`:
 
 ```
-python3 harness/verify_aauth_vectors.py path/to/http-signature.json
-python3 harness/verify_signature_key_header.py path/to/signature-key.json
+python3 harness/verify_all_fixtures.py path/to/aauth-go/testdata/vectors
 ```
+
+That runs all nine files and exits non-zero if any case disagrees. The
+individual runners also work standalone:
+
+```
+python3 harness/verify_aauth_vectors.py       .../http-signature.json
+python3 harness/verify_signature_key_header.py .../signature-key.json
+python3 harness/verify_structured_headers.py   .../signature-error.json .../requirement.json
+```
+
+The fixtures themselves are not vendored here. They belong to `aauth-go`, and
+copying them would create a second place for them to drift.
 
 ## Status
 
