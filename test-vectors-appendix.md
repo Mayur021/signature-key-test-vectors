@@ -1111,7 +1111,7 @@ Each of these is derived from a MUST or MUST NOT in the draft and names the sect
 
 ### A.12.1 hwk-with-kid-forbidden
 
-**MUST REJECT** with `error=invalid_key`
+**MUST REJECT** with `error=invalid_key` (category 1)
 
 Section: Header Web Key (hwk) / Constraints
 
@@ -1124,7 +1124,7 @@ rq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519";kid="k1"
 
 ### A.12.2 hwk-alg-absent
 
-**MUST REJECT** with `error=unsupported_algorithm`
+**MUST REJECT** with `error=unsupported_algorithm` (category 1)
 
 Section: Algorithm Determination
 
@@ -1137,7 +1137,7 @@ rq1sPFXT_LAG26zBtLm8ItK0"
 
 ### A.12.3 hwk-alg-polymorphic-eddsa
 
-**MUST REJECT** with `error=unsupported_algorithm`
+**MUST REJECT** with `error=unsupported_algorithm` (category 1)
 
 Section: Algorithm Determination
 
@@ -1150,7 +1150,7 @@ rq1sPFXT_LAG26zBtLm8ItK0";alg="EdDSA"
 
 ### A.12.4 hwk-alg-kty-inconsistent
 
-**MUST REJECT** with `error=invalid_key`
+**MUST REJECT** with `error=invalid_key` (category 1)
 
 Section: Algorithm Determination
 
@@ -1163,7 +1163,7 @@ Signature-Key: sig=hwk;kty="RSA";n="0vx7agoebGcQSuuPiLJXZpt";e="AQAB"\
 
 ### A.12.5 hwk-alg-crv-inconsistent
 
-**MUST REJECT** with `error=invalid_key`
+**MUST REJECT** with `error=invalid_key` (category 1)
 
 Section: Algorithm Determination
 
@@ -1177,7 +1177,7 @@ Signature-Key: sig=hwk;kty="EC";crv="P-384";x="LhnFCX9JWOQhInaap65wwL\
 
 ### A.12.6 hwk-symmetric-forbidden
 
-**MUST REJECT** with `error=unsupported_algorithm`
+**MUST REJECT** with `error=unsupported_algorithm` (category 1)
 
 Section: Algorithm Determination / Symmetric Algorithms
 
@@ -1190,7 +1190,7 @@ HS256"
 
 ### A.12.7 unknown-scheme-selected
 
-**MUST REJECT** with `error=unsupported_scheme`
+**MUST REJECT** with `error=unsupported_scheme` (category 1)
 
 Section: Signature-Key Header / Unknown schemes
 
@@ -1202,7 +1202,7 @@ Signature-Key: sig=quantum-widget;blob="AAAA"
 
 ### A.12.8 self-jwt-with-cnf-forbidden
 
-**MUST REJECT** with `error=invalid_jwt`
+**MUST REJECT** with `error=invalid_jwt` (category 1)
 
 Section: Self-Issued JWT (self-jwt) / Security Considerations
 
@@ -1220,7 +1220,7 @@ VVTxNveDvKJ7yGaCeZt5XoT92VXZhCYt7E4MPRJPo0eWw"
 
 ### A.12.9 jwks_uri-issuer-mismatch
 
-**MUST REJECT** with `error=issuer_mismatch`
+**MUST REJECT** with `error=issuer_mismatch` (category 1)
 
 Section: JWKS URI Discovery (jwks_uri) / Discovery procedure
 
@@ -1245,7 +1245,7 @@ Served at the discovery URL:
 
 ### A.12.10 jwks_uri-issuer-missing
 
-**MUST REJECT** with `error=issuer_missing`
+**MUST REJECT** with `error=issuer_missing` (category 1)
 
 Section: JWKS URI Discovery (jwks_uri) / Discovery procedure
 
@@ -1269,7 +1269,7 @@ Served at the discovery URL:
 
 ### A.12.11 label-missing-from-signature-key
 
-**MUST REJECT** with `error=invalid_key`
+**MUST REJECT** with `error=invalid_key` (category 1)
 
 Section: Label Correlation / Label Consistency
 
@@ -1285,7 +1285,7 @@ OErq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519"
 
 ### A.12.12 unselected-member-unknown-scheme-MUST-ACCEPT
 
-**MUST ACCEPT**
+**MUST ACCEPT** (category 1)
 
 Section: Signature-Key Header / Unknown schemes + Label Consistency
 
@@ -1386,7 +1386,7 @@ rq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519"
 
 ### A.12.16 jwks-kid-not-in-jwks
 
-**MUST REJECT** with `error=unknown_key`
+**MUST REJECT** with `error=unknown_key` (category 1)
 
 Section: unknown_key / Direct JWKS (jwks) discovery procedure
 

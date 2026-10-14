@@ -730,6 +730,8 @@
   "negative_vectors": [
     {
       "name": "hwk-with-kid-forbidden",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -739,6 +741,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=hwk;kty=\"OKP\";crv=\"Ed25519\";x=\"fFWGSTH7SN1gol911OErq1sPFXT_LAG26zBtLm8ItK0\";alg=\"Ed25519\";kid=\"k1\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "6afcff1d2e5dc30b20629d94b31d9f940c7dddc204432e280126713b1f4d1df9",
+      "signature_base_length": 278,
       "must_reject": true,
       "expected_signature_error": "invalid_key",
       "rule": "The kid parameter MUST NOT be used with hwk. The key is carried inline, so there is nothing for an identifier to select, and a kid that disagrees with the inline key has no defined resolution. This is a member the document forbids: understood and rejected, not unknown and ignored.",
@@ -746,6 +749,8 @@
     },
     {
       "name": "hwk-alg-absent",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -755,6 +760,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=hwk;kty=\"OKP\";crv=\"Ed25519\";x=\"fFWGSTH7SN1gol911OErq1sPFXT_LAG26zBtLm8ItK0\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "90d25a913b0685afc43653d21ce096a7de174e2936983acb2108779e200b2826",
+      "signature_base_length": 255,
       "must_reject": true,
       "expected_signature_error": "unsupported_algorithm",
       "rule": "A verifier MUST reject a JWK whose alg member is absent, and MUST NOT select an algorithm for it by inspecting other key parameters. kty and crv would determine it here; the draft requires alg regardless.",
@@ -762,6 +768,8 @@
     },
     {
       "name": "hwk-alg-polymorphic-eddsa",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -771,6 +779,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=hwk;kty=\"OKP\";crv=\"Ed25519\";x=\"fFWGSTH7SN1gol911OErq1sPFXT_LAG26zBtLm8ItK0\";alg=\"EdDSA\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "241552f94cd86a17a299f8f5cb67aceee05578e8318a588e5d6a345bc97e236d",
+      "signature_base_length": 267,
       "must_reject": true,
       "expected_signature_error": "unsupported_algorithm",
       "rule": "The polymorphic EdDSA identifier MUST NOT be used. Use the fully-specified Ed25519 or Ed448 identifiers of RFC 9864.",
@@ -778,6 +787,8 @@
     },
     {
       "name": "hwk-alg-kty-inconsistent",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -787,6 +798,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=hwk;kty=\"RSA\";n=\"0vx7agoebGcQSuuPiLJXZpt\";e=\"AQAB\";alg=\"ES256\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "b44165f0cc4be2a85482ba58531021496a431b52b9be64c1fa3448d35b597019",
+      "signature_base_length": 242,
       "must_reject": true,
       "expected_signature_error": "invalid_key",
       "rule": "A verifier MUST verify kty and, where present, crv are consistent with alg, and MUST reject the key if they are not. alg ES256 with kty RSA is inconsistent. Rejecting on disagreement stops a key being used under either of two conflicting interpretations.",
@@ -794,6 +806,8 @@
     },
     {
       "name": "hwk-alg-crv-inconsistent",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -803,6 +817,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=hwk;kty=\"EC\";crv=\"P-384\";x=\"LhnFCX9JWOQhInaap65wwL3rcT49WyvQSlIhMLO8lr4\";y=\"PEr4OX8tM8oHdcYMrbeIQhl58q5XxkVG28CJQ8tS618\";alg=\"ES256\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "cd543984e98df2bbaf41f59bb810738d243ed1436ea31ffdeac9ce999a925a5b",
+      "signature_base_length": 312,
       "must_reject": true,
       "expected_signature_error": "invalid_key",
       "rule": "Same rule on the curve: alg ES256 with crv P-384 is inconsistent and MUST be rejected.",
@@ -810,6 +825,8 @@
     },
     {
       "name": "hwk-symmetric-forbidden",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -819,6 +836,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=hwk;kty=\"oct\";k=\"c2VjcmV0LWtleS1tYXRlcmlhbA\";alg=\"HS256\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "9f00b0941652ce4a273bf6c87a0539f1e6d0a08f360841df67e9087ca624f7ad",
+      "signature_base_length": 236,
       "must_reject": true,
       "expected_signature_error": "unsupported_algorithm",
       "rule": "Symmetric algorithms MUST NOT be used. The oct key type and the JOSE MAC identifiers name a shared secret rather than a public key, and a verifier MUST reject a scheme that conveys or references such a key.",
@@ -826,6 +844,8 @@
     },
     {
       "name": "unknown-scheme-selected",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -835,6 +855,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=quantum-widget;blob=\"AAAA\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "66fcbe804c204d78d395f7bc21e2e6033a28805cf8531da7c12daceb5497a3b4",
+      "signature_base_length": 206,
       "must_reject": true,
       "expected_signature_error": "unsupported_scheme",
       "rule": "A verifier that selects a member whose scheme token it does not implement, including any unregistered value, MUST reject with unsupported_scheme and MUST NOT fail in a scheme-specific or undefined manner. Dispatch SHOULD be a registry lookup, not a fixed set of branches.",
@@ -842,6 +863,8 @@
     },
     {
       "name": "self-jwt-with-cnf-forbidden",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -851,6 +874,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=self-jwt;jwt=\"eyJhbGciOiJFUzI1NiIsImtpZCI6InIxIiwidHlwIjoiYWEtZXZlbnQrand0In0.eyJpc3MiOiJodHRwczovL3Jlc291cmNlLmV4YW1wbGUiLCJkd2siOiJhYXV0aC1yZXNvdXJjZS5qc29uIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzYyNTgsImNuZiI6eyJqd2siOnsia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.Y-3-usLcf-R4aQhkaFvfLeFgRCVOPsXje7W4NQ1KjVVTxNveDvKJ7yGaCeZt5XoT92VXZhCYt7E4MPRJPo0eWw\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "13b456157fe8329594a5da5f4ff788438aa9604b4470192ce095979d309321f0",
+      "signature_base_length": 621,
       "must_reject": true,
       "expected_signature_error": "invalid_jwt",
       "rule": "Verifiers MUST validate that cnf is absent before treating the scheme as self-issued; a JWT containing cnf MUST be rejected. A self-jwt's signing key IS its confirmation key, so a cnf claim is a different trust model wearing this scheme's name.",
@@ -862,6 +886,8 @@
     },
     {
       "name": "jwks_uri-issuer-mismatch",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -871,6 +897,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=jwks_uri;id=\"https://mismatch.example\";dwk=\"example-configuration\";kid=\"key-1\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "1f6d47be3f906fcebc9c2e7e1dcad3f13ca4ca8443ec7620f0c0e2f66ac32d5b",
+      "signature_base_length": 258,
       "must_reject": true,
       "expected_signature_error": "issuer_mismatch",
       "rule": "The metadata document's issuer MUST equal the id parameter by byte equality as presented. Without the check, a document served under id through shared hosting or subdomain takeover could point jwks_uri at keys that do not belong to id, and the verifier would attribute the request accordingly.",
@@ -885,6 +912,8 @@
     },
     {
       "name": "jwks_uri-issuer-missing",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -894,6 +923,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=jwks_uri;id=\"https://nodoc.example\";dwk=\"example-configuration\";kid=\"key-1\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "8d569aba7fd3076e58d9042c5f890da9ff8f08b2129e33415f850ef2d946cec9",
+      "signature_base_length": 255,
       "must_reject": true,
       "expected_signature_error": "issuer_missing",
       "rule": "The document MUST contain issuer and jwks_uri. Reject with issuer_missing if issuer is absent.",
@@ -907,6 +937,8 @@
     },
     {
       "name": "label-missing-from-signature-key",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -917,6 +949,8 @@
         }
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": other=hwk;kty=\"OKP\";crv=\"Ed25519\";x=\"fFWGSTH7SN1gol911OErq1sPFXT_LAG26zBtLm8ItK0\";alg=\"Ed25519\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
+      "signature_base_sha256": "629e88280bcb598943d8c7a317ba3cd85d215841a36cadd05045da824f02cebb",
+      "signature_base_length": 271,
       "must_reject": true,
       "expected_signature_error": "invalid_key",
       "rule": "If the Signature-Key header is present and the verifier is attempting to verify a label using it, but the corresponding dictionary member is missing, verification for that signature MUST fail. Here the verifier wants label 'sig' and Signature-Key carries only 'other'.",
@@ -924,6 +958,8 @@
     },
     {
       "name": "unselected-member-unknown-scheme-MUST-ACCEPT",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -933,6 +969,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=hwk;kty=\"OKP\";crv=\"Ed25519\";x=\"fFWGSTH7SN1gol911OErq1sPFXT_LAG26zBtLm8ItK0\";alg=\"Ed25519\", future=quantum-widget;blob=\"AAAA\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "25c03d163e15837465337b525ed0a194c7bfa52e868a264d7dca18253e75c1f2",
+      "signature_base_length": 304,
       "must_reject": false,
       "expected_headers": {
         "Signature-Input": "sig=(\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
@@ -1001,6 +1038,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=jwks;url=\"https://client.example/mixed.jwks\";kid=\"classic-1\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "692f4328cc2b89373e24a17c02d8e5a7bd3865ce430ae4cedf167919aad63ef3",
+      "signature_base_length": 240,
       "must_reject": false,
       "expected_headers": {
         "Signature-Input": "sig=(\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
@@ -1068,6 +1106,8 @@
         "@path"
       ],
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\");created=1791275958",
+      "signature_base_sha256": "72e469496743b701e3bee13ea9f5d6cb6989c6e997d531304d916d173df590ad",
+      "signature_base_length": 142,
       "must_reject": true,
       "expected_signature_error": "invalid_input",
       "expected_signature_error_members": {
@@ -1078,6 +1118,8 @@
     },
     {
       "name": "jwks-kid-not-in-jwks",
+      "vector_category": 1,
+      "now": 1791275958,
       "request": {
         "method": "GET",
         "target_uri": "https://resource.example/api/documents",
@@ -1087,6 +1129,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=jwks;url=\"https://client.example/keys.jwks\";kid=\"rotated-away\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "363062fece8abec71aaaf0ac9000f1c3e74676f3dc12934ac0a91de576996735",
+      "signature_base_length": 242,
       "must_reject": true,
       "expected_signature_error": "unknown_key",
       "rule": "The kid selects no member of the fetched JWKS. The verifier rejects with unknown_key rather than falling back to another member: a JWKS with one usable key is not licence to use it for a kid that does not name it. The server SHOULD re-fetch the JWKS once before answering, to handle a key that rotated between the signer publishing and the verifier reading.",
@@ -1165,6 +1208,7 @@
       },
       "signature_base": "\"@method\": GET\n\"@authority\": resource.example\n\"@path\": /api/documents\n\"signature-key\": sig=jwt;jwt=\"eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFUzI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcGxlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTIzIiwiaWF0IjoxNzkxMjc1ODk4LCJleHAiOjE3OTEyNzYyNTgsImNuZiI6eyJqd2siOnsia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJmRldHU1RIN1NOMWdvbDkxMU9FcnExc1BGWFRfTEFHMjZ6QnRMbThJdEswIiwiYWxnIjoiRWQyNTUxOSJ9fX0.DpNFpgJrf_gz5ErzK42NZ2D_zx1ND4F0nVImvciZtfGWVmztXoGFMU4R1y__QbagrYBY3BTHrOhduGjyVf8mRQ\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",
       "signature_base_sha256": "8e04add5f47682ac9098ce5b549644347e689ae76cb43cbb897301ebd15c070a",
+      "signature_base_length": 652,
       "must_reject": false,
       "expected_headers": {
         "Signature-Input": "sig=(\"@method\" \"@authority\" \"@path\" \"signature-key\");created=1791275958",

@@ -325,10 +325,12 @@ NEG = []
 def neg(name, sigkey_hdr, rule, expect_error, cite, extra=None):
     headers = {"Signature-Key": sigkey_hdr}
     base, params = signature_base("GET", TARGET, headers, COMPONENTS, CREATED)
-    e = {"name": name, "request": {"method": "GET", "target_uri": TARGET,
+    e = {"name": name, "vector_category": 1, "now": NOW,
+         "request": {"method": "GET", "target_uri": TARGET,
          "headers": {"Signature-Key": sigkey_hdr}},
          "signature_base": base,
          "signature_base_sha256": hashlib.sha256(base.encode()).hexdigest(),
+         "signature_base_length": len(base.encode()),
          "must_reject": True, "expected_signature_error": expect_error,
          "rule": rule, "draft_section": cite}
     if extra: e.update(extra)
@@ -426,12 +428,15 @@ _lc_base, _lc_params = signature_base("GET", TARGET,
                                       {"Signature-Key": _lc_hdr}, COMPONENTS, CREATED)
 NEG.append({
     "name": "label-missing-from-signature-key",
+    "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
                 "headers": {
                     "Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in COMPONENTS)});created={CREATED}',
                     "Signature": "sig=:AAAA:",
                     "Signature-Key": _lc_hdr}},
     "signature_base": _lc_base,
+    "signature_base_sha256": hashlib.sha256(_lc_base.encode()).hexdigest(),
+    "signature_base_length": len(_lc_base.encode()),
     "must_reject": True, "expected_signature_error": "invalid_key",
     "rule": "If the Signature-Key header is present and the verifier is "
             "attempting to verify a label using it, but the corresponding "
@@ -448,10 +453,12 @@ _ok_base, _ok_params = signature_base("GET", TARGET,
 _ok_sig = sign_base(_ok_base, rq_sk, "Ed25519")
 NEG.append({
     "name": "unselected-member-unknown-scheme-MUST-ACCEPT",
+    "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
                 "headers": {"Signature-Key": _ok_hdr}},
     "signature_base": _ok_base,
     "signature_base_sha256": hashlib.sha256(_ok_base.encode()).hexdigest(),
+    "signature_base_length": len(_ok_base.encode()),
     "must_reject": False,
     "expected_headers": {
         "Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in COMPONENTS)});created={CREATED}',
@@ -537,6 +544,7 @@ NEG.append({
                 "headers": {"Signature-Key": mixed_hdr}},
     "signature_base": mb,
     "signature_base_sha256": hashlib.sha256(mb.encode()).hexdigest(),
+    "signature_base_length": len(mb.encode()),
     "must_reject": False,
     "expected_headers": {
         "Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in COMPONENTS)});created={CREATED}',
@@ -636,6 +644,8 @@ NEG.append({
         "Signature-Key": _nc_hdr}},
     "covered_components": _nc,
     "signature_base": _nc_base,
+    "signature_base_sha256": hashlib.sha256(_nc_base.encode()).hexdigest(),
+    "signature_base_length": len(_nc_base.encode()),
     "must_reject": True, "expected_signature_error": "invalid_input",
     "expected_signature_error_members": {
         "required_input": '("@method" "@authority" "@path" "signature-key")'},
@@ -715,6 +725,7 @@ NEG.append({
                 "headers": {"Signature-Key": _fh}},
     "signature_base": _fb,
     "signature_base_sha256": hashlib.sha256(_fb.encode()).hexdigest(),
+    "signature_base_length": len(_fb.encode()),
     "must_reject": False,
     "expected_headers": {
         "Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in COMPONENTS)});created={CREATED}',
