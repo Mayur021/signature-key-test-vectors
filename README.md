@@ -191,12 +191,13 @@ cases for the wrong reason.
 
 ### Error codes
 
-Ten of the thirteen `Signature-Error` codes are exercised:
+Ten of the fourteen `Signature-Error` codes are exercised:
 `unsupported_algorithm`, `unsupported_scheme`, `invalid_input`, `invalid_key`,
 `unknown_key`, `issuer_missing`, `issuer_mismatch`, `invalid_jwt`,
-`expired_jwt`, `clock_skew`.
+`expired_jwt`, `clock_skew`. The last of those was added in
+draft-hardt-httpbis-signature-key-09.
 
-The three left alone, since a gap without a reason looks like an oversight:
+The four left alone, since a gap without a reason looks like an oversight:
 
 - `invalid_signature` is already covered by the existing `http-signature.json`
   fixtures, which tamper the path, the body and the `Signature-Key` member.
@@ -205,6 +206,11 @@ The three left alone, since a gap without a reason looks like an oversight:
 - `revoked_jwt` cannot be a static vector. The draft says how a verifier learns
   of a withdrawal is out of scope and not discoverable from the JWT, so the
   condition lives entirely in verifier state that no file can establish.
+- `cache_miss` belongs to the `cached` scheme, which is not among the schemes
+  this set covers. The vectors issue lists `hwk`, `jkt-jwt`, `jwks_uri`,
+  `jwks`, `jwt`, `self-jwt` and `x509`, and the draft carries an editor's note
+  calling the caching design a straw man, so pinning its error in a static
+  vector looked premature.
 
 ## Not covered
 
