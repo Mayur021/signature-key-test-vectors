@@ -78,6 +78,15 @@ def signature_base(method, url, headers, components, created):
     lines.append(f'"@signature-params": {params}')
     return "\n".join(lines), params
 
+# A negative whose Signature-Key member is itself the faulty part still carries
+# a real signature, made with a key the header does not name. SIG_KEYS records
+# which key produced which signature so the vector can publish it and a harness
+# can establish that the signature is sound and the only fault is the one under
+# test. Keyed by the base64 signature value, so it catches every signature
+# whether it was built through signed_headers or inline.
+SIGNER_KEYS = {}
+SIG_KEYS = {}
+
 def sign_base(base, signer, kind):
     if kind == "Ed25519":
         sig = signer.sign(base.encode())
@@ -85,7 +94,11 @@ def sign_base(base, signer, kind):
         der = signer.sign(base.encode(), ec.ECDSA(hashes.SHA256(), deterministic_signing=True))
         r, s = decode_dss_signature(der)
         sig = r.to_bytes(32, "big") + s.to_bytes(32, "big")
-    return base64.b64encode(sig).decode()
+    out = base64.b64encode(sig).decode()
+    rec = SIGNER_KEYS.get(id(signer))
+    if rec is not None:
+        SIG_KEYS[out] = rec
+    return out
 
 def wrap8792(text, width=69):
     """RFC 8792 single-backslash line folding."""
@@ -112,6 +125,16 @@ is_sk, is_jwk, is_priv = p256_from_seed(b"aauth-sigkey-vectors/issuer-key/v1")
 en_sk, en_jwk, en_priv = p256_from_seed(b"aauth-sigkey-vectors/enclave-key/v1")
 sj_sk, sj_jwk, sj_priv = p256_from_seed(b"aauth-sigkey-vectors/self-jwt-key/v1")
 ec_sk, ec_jwk, ec_priv = p256_from_seed(b"aauth-sigkey-vectors/request-key-ec/v1")
+m2_sk, m2_jwk, m2_priv = ed25519_from_seed(b"aauth-sigkey-vectors/multi-sig-second-key/v1")
+
+for _sk, _pub, _prv, _alg in (
+        (rq_sk, rq_jwk, rq_priv, "Ed25519"),
+        (m2_sk, dict(m2_jwk, kid="key-2"), dict(m2_priv, kid="key-2"), "Ed25519"),
+        (is_sk, is_jwk, is_priv, "ES256"),
+        (en_sk, en_jwk, en_priv, "ES256"),
+        (sj_sk, sj_jwk, sj_priv, "ES256"),
+        (ec_sk, ec_jwk, ec_priv, "ES256")):
+    SIGNER_KEYS[id(_sk)] = {"public_jwk": _pub, "private_jwk": _prv, "alg": _alg}
 
 VECTORS = []
 
@@ -289,11 +312,12 @@ emit("self-jwt-es256", "self-jwt",
 
 # ---- 9. multiple signatures, both covering signature-key -------
 multi_hdr = (f'sig1=hwk;kty="OKP";crv="Ed25519";x="{rq_jwk["x"]}";alg="Ed25519", '
-             f'sig2=jwks;url="{CLIENT}/keys.jwks";kid="key-1"')
+             f'sig2=jwks;url="{CLIENT}/second.jwks";kid="key-2"')
 mh = {"Signature-Key": multi_hdr}
 b1, p1 = signature_base("GET", TARGET, mh, COMPONENTS, CREATED)
 s1 = sign_base(b1, rq_sk, "Ed25519")
-s2 = sign_base(b1, rq_sk, "Ed25519")
+s2 = sign_base(b1, m2_sk, "Ed25519")
+assert s1 != s2, "the two labels must not collapse to one signature"
 VECTORS.append({
     "name": "multi-signature-hwk-and-jwks", "scheme": "hwk+jwks",
     "now": NOW, "vector_category": 3,
@@ -310,29 +334,71 @@ VECTORS.append({
         "Signature": f"sig1=:{s1}:, sig2=:{s2}:",
         "Signature-Key": multi_hdr},
     "key": {"public_jwk": rq_jwk, "private_jwk": rq_priv, "alg": "Ed25519"},
+    "keys": {
+        "sig1": {"public_jwk": rq_jwk, "private_jwk": rq_priv, "alg": "Ed25519"},
+        "sig2": {"public_jwk": dict(m2_jwk, kid="key-2"),
+                 "private_jwk": dict(m2_priv, kid="key-2"), "alg": "Ed25519"}},
+    "discovery": {"jwks_url": f"{CLIENT}/second.jwks",
+                  "jwks": {"keys": [dict(m2_jwk, kid="key-2", use="sig")]}},
     "signature_is_reproducible": True,
     "notes": "Both labels cover signature-key, and the COMPLETE Signature-Key "
              "header was populated before either signature was made, so each "
              "signature protects both members' key material. Both labels "
-             "therefore share one identical signature base. Label correlation "
-             "is by equality of label name across Signature-Input, Signature "
-             "and Signature-Key.",
+             "therefore share one identical signature base. The two members "
+             "resolve to DIFFERENT keys, so the two signatures over that one "
+             "base differ, which is what makes the vector able to catch a "
+             "verifier that resolves one label and reuses its key for the "
+             "other. Each member is resolved independently: sig1 from the "
+             "inline hwk key, sig2 from its own url and kid. Label "
+             "correlation is by equality of label name across "
+             "Signature-Input, Signature and Signature-Key. Per-label key "
+             "material is under keys; key repeats sig1 for harnesses that "
+             "expect a single key.",
 })
+
+
+def signed_headers(sigkey_hdr, signer, kind, components=None, label="sig"):
+    """Build a COMPLETE signed request: Signature-Input, Signature, Signature-Key.
+
+    A must-reject vector has to be a real signed request with exactly one fault,
+    or an end-to-end verifier stops at invalid_signature before it reaches the
+    rule under test. The signature here is always valid over the base; the fault
+    lives in the Signature-Key member or in what it resolves to.
+    """
+    comps = components or COMPONENTS
+    base, params = signature_base("GET", TARGET, {"Signature-Key": sigkey_hdr},
+                                  comps, CREATED)
+    sig = sign_base(base, signer, kind)
+    hdrs = {
+        "Signature-Input": f'{label}=({" ".join(chr(34)+c+chr(34) for c in comps)});created={CREATED}',
+        "Signature": f"{label}=:{sig}:",
+        "Signature-Key": sigkey_hdr,
+    }
+    return hdrs, base, params
 
 # ================================================================ negatives
 # Each is derived from a MUST / MUST NOT in the draft, cited by section name.
 NEG = []
-def neg(name, sigkey_hdr, rule, expect_error, cite, extra=None):
-    headers = {"Signature-Key": sigkey_hdr}
-    base, params = signature_base("GET", TARGET, headers, COMPONENTS, CREATED)
+def neg(name, sigkey_hdr, rule, expect_error, cite, extra=None,
+        signer=None, kind="Ed25519", unsigned_reason=None):
+    if unsigned_reason:
+        headers = {"Signature-Key": sigkey_hdr}
+        base, params = signature_base("GET", TARGET, headers, COMPONENTS, CREATED)
+    else:
+        headers, base, params = signed_headers(sigkey_hdr,
+                                               signer if signer is not None else rq_sk,
+                                               kind)
     e = {"name": name, "vector_category": 1, "now": NOW,
          "request": {"method": "GET", "target_uri": TARGET,
-         "headers": {"Signature-Key": sigkey_hdr}},
+         "headers": headers},
          "signature_base": base,
          "signature_base_sha256": hashlib.sha256(base.encode()).hexdigest(),
          "signature_base_length": len(base.encode()),
          "must_reject": True, "expected_signature_error": expect_error,
          "rule": rule, "draft_section": cite}
+    if unsigned_reason:
+        e["unsigned"] = True
+        e["unsigned_reason"] = unsigned_reason
     if extra: e.update(extra)
     NEG.append(e)
 
@@ -376,7 +442,11 @@ neg("hwk-symmetric-forbidden",
     "Symmetric algorithms MUST NOT be used. The oct key type and the JOSE MAC "
     "identifiers name a shared secret rather than a public key, and a verifier "
     "MUST reject a scheme that conveys or references such a key.",
-    "unsupported_algorithm", "Algorithm Determination / Symmetric Algorithms")
+    "unsupported_algorithm", "Algorithm Determination / Symmetric Algorithms",
+    unsigned_reason=("kty is oct. The scheme defines no symmetric mode, so there is no "
+                     "signing procedure for the key this member declares. Signing with "
+                     "an unrelated asymmetric key would add a second fault and make the "
+                     "vector test the wrong thing."))
 
 neg("unknown-scheme-selected",
     'sig=quantum-widget;blob="AAAA"',
@@ -384,7 +454,10 @@ neg("unknown-scheme-selected",
     "implement, including any unregistered value, MUST reject with "
     "unsupported_scheme and MUST NOT fail in a scheme-specific or undefined "
     "manner. Dispatch SHOULD be a registry lookup, not a fixed set of branches.",
-    "unsupported_scheme", "Signature-Key Header / Unknown schemes")
+    "unsupported_scheme", "Signature-Key Header / Unknown schemes",
+    unsigned_reason=("the selected scheme is unknown by construction, so no signing "
+                     "procedure is defined for it. A signature made under some other "
+                     "scheme is not the thing the verifier is asked to reject."))
 
 _self_cnf = jws({"alg": "ES256", "kid": "r1", "typ": "aa-event+jwt"},
                 {"iss": RESOURCE, "dwk": "aauth-resource.json",
@@ -426,13 +499,15 @@ neg("jwks_uri-issuer-missing",
 _lc_hdr = f'other=hwk;kty="OKP";crv="Ed25519";x="{rq_jwk["x"]}";alg="Ed25519"'
 _lc_base, _lc_params = signature_base("GET", TARGET,
                                       {"Signature-Key": _lc_hdr}, COMPONENTS, CREATED)
+# a real signature under label sig, so the only fault is the missing member
+_lc_sig = sign_base(_lc_base, rq_sk, "Ed25519")
 NEG.append({
     "name": "label-missing-from-signature-key",
     "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
                 "headers": {
                     "Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in COMPONENTS)});created={CREATED}',
-                    "Signature": "sig=:AAAA:",
+                    "Signature": f"sig=:{_lc_sig}:",
                     "Signature-Key": _lc_hdr}},
     "signature_base": _lc_base,
     "signature_base_sha256": hashlib.sha256(_lc_base.encode()).hexdigest(),
@@ -455,7 +530,7 @@ NEG.append({
     "name": "unselected-member-unknown-scheme-MUST-ACCEPT",
     "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
-                "headers": {"Signature-Key": _ok_hdr}},
+                "headers": signed_headers(_ok_hdr, rq_sk, "Ed25519")[0]},
     "signature_base": _ok_base,
     "signature_base_sha256": hashlib.sha256(_ok_base.encode()).hexdigest(),
     "signature_base_length": len(_ok_base.encode()),
@@ -516,11 +591,26 @@ AKP_NOTE = (f"ML-DSA-44 key, {len(pq_pk)} byte public value per FIPS 204, carrie
             f"rather than derivable from the key structure.")
 
 # ---- A. JWKS holding ONLY an ML-DSA-44 key ---------------------
+# Signed with the ML-DSA key the JWKS actually holds, so the request is complete
+# and the single fault is that the verifier does not implement that key type.
+_akp_hdr = f'sig=jwks;url="{CLIENT}/pq.jwks";kid="pq-1"'
+_akp_base, _ = signature_base("GET", TARGET, {"Signature-Key": _akp_hdr},
+                              COMPONENTS, CREATED)
+_akp_sig = base64.b64encode(
+    ML_DSA_44.sign(pq_sk, _akp_base.encode(), deterministic=True)).decode()
 NEG.append({
     "name": "akp-only-jwks-must-decline-not-throw",
     "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET, "headers": {
-        "Signature-Key": f'sig=jwks;url="{CLIENT}/pq.jwks";kid="pq-1"'}},
+        "Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in COMPONENTS)});created={CREATED}',
+        "Signature": f"sig=:{_akp_sig}:",
+        "Signature-Key": _akp_hdr}},
+    "signing_key": SIG_KEYS.setdefault(_akp_sig, {
+        "public_jwk": dict(pq_jwk, kid="pq-1"),
+        "private_jwk": dict(pq_priv, kid="pq-1"), "alg": "ML-DSA-44"}),
+    "signature_base": _akp_base,
+    "signature_base_sha256": hashlib.sha256(_akp_base.encode()).hexdigest(),
+    "signature_base_length": len(_akp_base.encode()),
     "must_reject": True, "expected_signature_error": "unsupported_algorithm",
     "rule": "A verifier that encounters a JWK whose kty it does not implement, "
             "including the AKP key type, MUST reject the key with defined error "
@@ -541,7 +631,9 @@ NEG.append({
     "name": "mixed-jwks-ignore-unparseable-neighbour-MUST-ACCEPT",
     "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
-                "headers": {"Signature-Key": mixed_hdr}},
+                "headers": {"Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in COMPONENTS)});created={CREATED}',
+                            "Signature": f"sig=:{ms}:",
+                            "Signature-Key": mixed_hdr}},
     "signature_base": mb,
     "signature_base_sha256": hashlib.sha256(mb.encode()).hexdigest(),
     "signature_base_length": len(mb.encode()),
@@ -639,9 +731,8 @@ _nc_base, _ = signature_base("GET", TARGET, {"Signature-Key": _nc_hdr}, _nc, CRE
 NEG.append({
     "name": "signature-key-not-covered",
     "vector_category": 1, "now": NOW,
-    "request": {"method": "GET", "target_uri": TARGET, "headers": {
-        "Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in _nc)});created={CREATED}',
-        "Signature-Key": _nc_hdr}},
+    "request": {"method": "GET", "target_uri": TARGET,
+                "headers": signed_headers(_nc_hdr, rq_sk, "Ed25519", components=_nc)[0]},
     "covered_components": _nc,
     "signature_base": _nc_base,
     "signature_base_sha256": hashlib.sha256(_nc_base.encode()).hexdigest(),
@@ -682,7 +773,7 @@ NEG.append({
     "name": "jwt-without-exp",
     "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
-                "headers": {"Signature-Key": f'sig=jwt;jwt="{_noexp}"'}},
+                "headers": signed_headers(f'sig=jwt;jwt="{_noexp}"', rq_sk, "Ed25519")[0]},
     "must_reject": True, "expected_signature_error": "invalid_jwt",
     "rule": "The jwt scheme requires exp. The assertion carries a "
             "confirmation key, and exp is what bounds how long that key is "
@@ -700,7 +791,7 @@ NEG.append({
     "name": "jwt-expired-one-second-before-now",
     "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
-                "headers": {"Signature-Key": f'sig=jwt;jwt="{_exp}"'}},
+                "headers": signed_headers(f'sig=jwt;jwt="{_exp}"', rq_sk, "Ed25519")[0]},
     "must_reject": True, "expected_signature_error": "expired_jwt",
     "rule": f"exp is now - 1, so the assertion expired one second before the "
             f"instant this vector declares. Expiry is validated before the "
@@ -722,7 +813,9 @@ NEG.append({
     "name": "jwt-exp-300s-after-now-MUST-ACCEPT",
     "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
-                "headers": {"Signature-Key": _fh}},
+                "headers": {"Signature-Input": f'sig=({" ".join(chr(34)+c+chr(34) for c in COMPONENTS)});created={CREATED}',
+                            "Signature": f"sig=:{_fs}:",
+                            "Signature-Key": _fh}},
     "signature_base": _fb,
     "signature_base_sha256": hashlib.sha256(_fb.encode()).hexdigest(),
     "signature_base_length": len(_fb.encode()),
@@ -747,8 +840,13 @@ NEG.append({
     "name": "jwt-iat-one-hour-after-now-is-clock-skew",
     "vector_category": 1, "now": NOW,
     "request": {"method": "GET", "target_uri": TARGET,
-                "headers": {"Signature-Key": f'sig=jwt;jwt="{_fut}"'}},
+                "headers": signed_headers(f'sig=jwt;jwt="{_fut}"', rq_sk, "Ed25519")[0]},
     "must_reject": True, "expected_signature_error": "clock_skew",
+    "applies_to": "verifier_bounds_iat",
+    "conditional": ("5.4.14 does not require a verifier to bound iat. This vector "
+                    "applies only to a verifier that does. One that does not bound "
+                    "iat is conformant and MUST NOT be failed for accepting this "
+                    "request; it should skip the vector rather than record a miss."),
     "rule": "iat is now + 3600, further ahead of the verifier's clock than any "
             "reasonable validity window. The distinct code is what the caller "
             "needs: nothing about the assertion or the signature is wrong, the "
@@ -759,18 +857,61 @@ NEG.append({
     "draft_section": "clock_skew",
     "assertion_jwt": {"compact": _fut, "iat_relative": "now + 3600"}})
 
+# ---- every signed negative publishes the key that signed it ----
+for _v in NEG:
+    _sf = _v["request"]["headers"].get("Signature")
+    if not _sf:
+        continue
+    _km = {}
+    for _part in _sf.split(", "):
+        _lb, _, _raw = _part.partition("=")
+        _rec = SIG_KEYS.get(_raw.strip(":"))
+        if _rec is not None:
+            _km[_lb] = _rec
+    if not _km:
+        raise SystemExit(f"{_v['name']} carries a signature made by an "
+                         f"unregistered key, so the vector cannot publish it")
+    _v["signing_keys"] = _km
+    if len(_km) == 1:
+        _v["signing_key"] = next(iter(_km.values()))
+
+# ---- every signed negative publishes its base too --------------
+# Three jwt cases were built as explicit dicts and discarded the base. Now that
+# each one is a complete signed request the base exists, so publish it: a reader
+# debugging a failure gets the same localisation everywhere, and the self-check
+# below covers these vectors as well. A conforming verifier still rejects them
+# on the assertion's claims before it needs the base, so the base is
+# informational here rather than something to diff.
+for _v in NEG:
+    if _v.get("signature_base") is not None or _v.get("unsigned"):
+        continue
+    _hs = _v["request"]["headers"]
+    if "Signature" not in _hs:
+        continue
+    _b, _p = signature_base("GET", _v["request"]["target_uri"],
+                            {"Signature-Key": _hs["Signature-Key"]},
+                            COMPONENTS, CREATED)
+    _v["covered_components"] = COMPONENTS
+    _v["signature_params"] = _p
+    _v["signature_base"] = _b
+    _v["signature_base_sha256"] = hashlib.sha256(_b.encode()).hexdigest()
+    _v["signature_base_length"] = len(_b.encode())
+    _v["signature_base_is_informational"] = True
+    _v.setdefault("signature_is_reproducible", True)
+
 # ================================================================ verify
-def verify_one(v):
-    """Re-verify every emitted signature against its own published base."""
+def _verify_field(base, sigfield, keymap, fallback):
+    """Verify every label in one Signature field against one base."""
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
     from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
     from cryptography.exceptions import InvalidSignature
-    sigfield = v["expected_headers"]["Signature"]
-    base = v["signature_base"].encode()
-    jwk = v["key"]["public_jwk"]
     results = []
     for part in sigfield.split(", "):
         label, _, raw = part.partition("=")
+        jwk = keymap.get(label) or fallback
+        if jwk is None:
+            results.append((label, None))
+            continue
         sig = base64.b64decode(raw.strip(":"))
         try:
             if jwk["alg"] == "ML-DSA-44":
@@ -793,6 +934,27 @@ def verify_one(v):
             results.append((label, False))
     return results
 
+def verify_one(v):
+    """The signature a signer is expected to PRODUCE, from expected_headers."""
+    return _verify_field(
+        v["signature_base"].encode(), v["expected_headers"]["Signature"],
+        {lb: k["public_jwk"] for lb, k in (v.get("keys") or {}).items()},
+        v["key"]["public_jwk"])
+
+def verify_request(v):
+    """The signature a verifier is GIVEN, from request.headers.
+
+    Every must-reject vector is a complete signed request, so this is the check
+    that the one fault in it is the one named and not a broken signature.
+    """
+    sigfield = v["request"]["headers"].get("Signature")
+    if not sigfield or v.get("signature_base") is None:
+        return []
+    return _verify_field(
+        v["signature_base"].encode(), sigfield,
+        {lb: k["public_jwk"] for lb, k in (v.get("signing_keys") or {}).items()},
+        None)
+
 # ================================================================ output
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -803,6 +965,30 @@ bundle = {
     "source_of_truth": "the draft text, not an implementation",
     "created_param": CREATED,
     "covered_components": COMPONENTS,
+    "field_notes": {
+        "key": "the key the vector's scheme member resolves to. On a positive "
+               "vector it is also the signing key. Absent from a negative "
+               "whose fault is that the member resolves to nothing usable.",
+        "keys": "per-label key material, present only where labels resolve to "
+                "different keys.",
+        "signing_key": "the key that actually produced the Signature header. "
+                       "On a negative this is deliberately not the key the "
+                       "header names: the signature is sound so that an "
+                       "end-to-end verifier reaches the rule under test "
+                       "instead of stopping at invalid_signature.",
+        "signing_keys": "the same thing per label.",
+        "unsigned": "true on the two vectors that cannot carry a signature at "
+                    "all, with unsigned_reason giving the reason.",
+        "signature_base_is_informational": "the request is signed and the base "
+                                           "is real, but a conforming verifier "
+                                           "rejects on the assertion's claims "
+                                           "before it needs the base, so do "
+                                           "not treat the base as the thing "
+                                           "under test.",
+        "applies_to": "a precondition on the verifier, not on the request. "
+                      "verifier_bounds_iat means the vector is a must-reject "
+                      "only for a verifier that bounds iat.",
+    },
     "positive_vectors": VECTORS,
     "negative_vectors": NEG,
 }
@@ -825,6 +1011,22 @@ for e in NEG:
             print(f"  [{tag}] {e['name']:<44} {label}")
             ok += good; fail += (not good)
 print(f"  {ok} verified, {fail} failed")
+
+req_ok = req_fail = req_skip = 0
+print("verification of the signatures the must-reject requests actually carry")
+for e in NEG:
+    for label, good in verify_request(e):
+        if good is None:
+            req_skip += 1
+            print(f"  [SKIP] {e['name']:<44} {label}  no signing key published")
+            continue
+        tag = "ok " if good else "FAIL"
+        print(f"  [{tag}] {e['name']:<44} {label}")
+        req_ok += good; req_fail += (not good)
+print(f"  {req_ok} verified, {req_fail} failed, {req_skip} without a key")
+if req_fail or req_skip:
+    raise SystemExit("a must-reject vector carries a signature that does not "
+                     "verify, so it would fail for the wrong reason")
 
 # ---- markdown appendix, RFC 8792 wrapped -------------------------
 md = ["# Test Vectors",
@@ -928,6 +1130,10 @@ for v in VECTORS + NEG:
     for u in ([d["metadata_url"]] if "metadata_url" in d else []):
         collisions.setdefault(u.split("://", 1)[1], set()).add(
             json.dumps(d["metadata_document"], sort_keys=True))
+    if "jwks" in d:
+        ju = d.get("jwks_url") or d["metadata_document"]["jwks_uri"]
+        collisions.setdefault(ju.split("://", 1)[1], set()).add(
+            json.dumps(d["jwks"], sort_keys=True))
 bad = {k: v for k, v in collisions.items() if len(v) > 1}
 if bad:
     raise SystemExit(f"two vectors claim one discovery path with different "

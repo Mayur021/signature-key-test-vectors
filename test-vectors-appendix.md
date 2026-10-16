@@ -792,7 +792,7 @@ Discovery documents:
 
 ## A.9 multi-signature-hwk-and-jwks (`hwk+jwks`)
 
-Both labels cover signature-key, and the COMPLETE Signature-Key header was populated before either signature was made, so each signature protects both members' key material. Both labels therefore share one identical signature base. Label correlation is by equality of label name across Signature-Input, Signature and Signature-Key.
+Both labels cover signature-key, and the COMPLETE Signature-Key header was populated before either signature was made, so each signature protects both members' key material. Both labels therefore share one identical signature base. The two members resolve to DIFFERENT keys, so the two signatures over that one base differ, which is what makes the vector able to catch a verifier that resolves one label and reuses its key for the other. Each member is resolved independently: sig1 from the inline hwk key, sig2 from its own url and kid. Label correlation is by equality of label name across Signature-Input, Signature and Signature-Key. Per-label key material is under keys; key repeats sig1 for harnesses that expect a single key.
 
 Category **3** (reproduce the bytes). Evaluate at `now = 1791275958`.
 
@@ -802,10 +802,10 @@ Request:
 GET https://resource.example/api/documents
 Signature-Key: sig1=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol911O\
 Erq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519", sig2=jwks;url="https://clie\
-nt.example/keys.jwks";kid="key-1"
+nt.example/second.jwks";kid="key-2"
 ~~~
 
-Signature base (332 bytes, SHA-256 `f423c698cf6119e6f868a00dd19879fd5baefedf0284bb529f17ed2ae5045664`):
+Signature base (334 bytes, SHA-256 `c09811d92733b581ef549a4762c51cf54f0b1930c809abfe02966dc0b1f00a37`):
 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
@@ -815,7 +815,7 @@ NOTE: '\' line wrapping per RFC 8792
 "@path": /api/documents
 "signature-key": sig1=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol91\
 1OErq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519", sig2=jwks;url="https://cl\
-ient.example/keys.jwks";kid="key-1"
+ient.example/second.jwks";kid="key-2"
 "@signature-params": ("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
 ~~~
@@ -826,12 +826,12 @@ Expected headers:
 Signature-Input: sig1=("@method" "@authority" "@path" "signature-key"\
 );created=1791275958, sig2=("@method" "@authority" "@path" "signature\
 -key");created=1791275958
-Signature: sig1=:99MzcYUGrhQKu1cFKJ1XZwHcLB6RX46znii9bmMzD6LNCH7ePFhF\
-klB4ZZMj3MkjGOsx8AHdofJmcsvVF0M9CA==:, sig2=:99MzcYUGrhQKu1cFKJ1XZwHc\
-LB6RX46znii9bmMzD6LNCH7ePFhFklB4ZZMj3MkjGOsx8AHdofJmcsvVF0M9CA==:
+Signature: sig1=:xPLrSCy6o9SEsrXVYARu1ixfPw/iLwPX3ORei8+jm+Q4uBig5Z84\
+LryBoQ5PTmtUJ6Z5V2DtKcJ0jJ+ygv6WDQ==:, sig2=:q3Ab8CdnpUZ2hO6xOPFrP7Po\
+brn7y9g61A4nHA+rGuiBcDorhxQEjjy6UANlZMS93J6ZuVcHNCjS+74Aib7LCw==:
 Signature-Key: sig1=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol911O\
 Erq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519", sig2=jwks;url="https://clie\
-nt.example/keys.jwks";kid="key-1"
+nt.example/second.jwks";kid="key-2"
 ~~~
 
 Key material (private key included so the vector can be regenerated):
@@ -852,6 +852,26 @@ Key material (private key included so the vector can be regenerated):
     "d": "ayuaMXaZDNNH9zOnyKYJM-AzageiMEuU_Si8nN3jvl8"
   },
   "alg": "Ed25519"
+}
+~~~
+
+Discovery documents:
+
+~~~ json
+{
+  "jwks_url": "https://client.example/second.jwks",
+  "jwks": {
+    "keys": [
+      {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "Holp6NEUC9TFMTp1xoRLEL2dIsWghewJNqT2zXiYSro",
+        "alg": "Ed25519",
+        "kid": "key-2",
+        "use": "sig"
+      }
+    ]
+  }
 }
 ~~~
 
@@ -1118,6 +1138,10 @@ Section: Header Web Key (hwk) / Constraints
 The kid parameter MUST NOT be used with hwk. The key is carried inline, so there is nothing for an identifier to select, and a kid that disagrees with the inline key has no defined resolution. This is a member the document forbids: understood and rejected, not unknown and ignored.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:cogvvqaNX0Tiosy9CODW3mXWlBRVQBy9TnH7a+yEcKyKTRe/1hbEg\
+8XFJe9lA4ve6Bh6Ce4WUFtvVqJsnKFjCQ==:
 Signature-Key: sig=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol911OE\
 rq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519";kid="k1"
 ~~~
@@ -1131,6 +1155,10 @@ Section: Algorithm Determination
 A verifier MUST reject a JWK whose alg member is absent, and MUST NOT select an algorithm for it by inspecting other key parameters. kty and crv would determine it here; the draft requires alg regardless.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:ofew5gQmQct3lGK8m1kzIUNqoo4hijTYExNgtmp5wt5305COId+p3\
+UO/jZWlI6u2fng42GIPGLQ3CaZEoG1WBw==:
 Signature-Key: sig=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol911OE\
 rq1sPFXT_LAG26zBtLm8ItK0"
 ~~~
@@ -1144,6 +1172,10 @@ Section: Algorithm Determination
 The polymorphic EdDSA identifier MUST NOT be used. Use the fully-specified Ed25519 or Ed448 identifiers of RFC 9864.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:eEzu4g8r7+JCMWTK1cO7KWwSbv9KJeUvARzvy/oTJKYM2U7JiyDQ5\
+Pzo1TtIJnPP7MgfkOuN57wuCgrwJNW3DQ==:
 Signature-Key: sig=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol911OE\
 rq1sPFXT_LAG26zBtLm8ItK0";alg="EdDSA"
 ~~~
@@ -1157,6 +1189,10 @@ Section: Algorithm Determination
 A verifier MUST verify kty and, where present, crv are consistent with alg, and MUST reject the key if they are not. alg ES256 with kty RSA is inconsistent. Rejecting on disagreement stops a key being used under either of two conflicting interpretations.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:R5W/LSI5ggGYW33e4g3D3wgj2h+wrzj2GP+IG1Aen+HmMrVpGghYo\
+PokncfUf5tkYfOn9ZwGNon6M2UhfRIRCQ==:
 Signature-Key: sig=hwk;kty="RSA";n="0vx7agoebGcQSuuPiLJXZpt";e="AQAB"\
 ;alg="ES256"
 ~~~
@@ -1170,6 +1206,10 @@ Section: Algorithm Determination
 Same rule on the curve: alg ES256 with crv P-384 is inconsistent and MUST be rejected.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:EsFwLTFATmkltfYoW1p9NRjo1MX2NmqR6bqybnRlJupajhuhx0usn\
+QmGfjqDn3J/xHFXETEu3CFywtkxoQQ4Bw==:
 Signature-Key: sig=hwk;kty="EC";crv="P-384";x="LhnFCX9JWOQhInaap65wwL\
 3rcT49WyvQSlIhMLO8lr4";y="PEr4OX8tM8oHdcYMrbeIQhl58q5XxkVG28CJQ8tS618\
 ";alg="ES256"
@@ -1209,6 +1249,10 @@ Section: Self-Issued JWT (self-jwt) / Security Considerations
 Verifiers MUST validate that cnf is absent before treating the scheme as self-issued; a JWT containing cnf MUST be rejected. A self-jwt's signing key IS its confirmation key, so a cnf claim is a different trust model wearing this scheme's name.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:PyD5tEwWiLsN1YjBTdFSgSw3LXD7IuPZya3Vl4zMqPPWbZ391KvmP\
+4ZSnb9lqYQwY56VTooGmBcDJk5ud9iSDA==:
 Signature-Key: sig=self-jwt;jwt="eyJhbGciOiJFUzI1NiIsImtpZCI6InIxIiwi\
 dHlwIjoiYWEtZXZlbnQrand0In0.eyJpc3MiOiJodHRwczovL3Jlc291cmNlLmV4YW1wb\
 GUiLCJkd2siOiJhYXV0aC1yZXNvdXJjZS5qc29uIiwiaWF0IjoxNzkxMjc1ODk4LCJleH\
@@ -1227,6 +1271,10 @@ Section: JWKS URI Discovery (jwks_uri) / Discovery procedure
 The metadata document's issuer MUST equal the id parameter by byte equality as presented. Without the check, a document served under id through shared hosting or subdomain takeover could point jwks_uri at keys that do not belong to id, and the verifier would attribute the request accordingly.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:2Bc3GJHmQmTpuIyr2q6hXfMiW215Ae/pehu5mFCQJXcnd3kTmHodL\
+eU0AH/Je/C3hnPzspFDLTHXDvzycV5uDg==:
 Signature-Key: sig=jwks_uri;id="https://mismatch.example";dwk="exampl\
 e-configuration";kid="key-1"
 ~~~
@@ -1252,6 +1300,10 @@ Section: JWKS URI Discovery (jwks_uri) / Discovery procedure
 The document MUST contain issuer and jwks_uri. Reject with issuer_missing if issuer is absent.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:yClQ1H7Jr9PXovhR1xmGwN/iZhyTDlASQJFUz/C1LB/c6NIxEny76\
+e8Vaa9u1t4VXQEOm4CtSj71WdIVWQbnBw==:
 Signature-Key: sig=jwks_uri;id="https://nodoc.example";dwk="example-c\
 onfiguration";kid="key-1"
 ~~~
@@ -1278,7 +1330,8 @@ If the Signature-Key header is present and the verifier is attempting to verify 
 ~~~ http-message
 Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
 ;created=1791275958
-Signature: sig=:AAAA:
+Signature: sig=:BSuKVH0AoL8/yeESCCMsnKTGDB21wQaY6Fl22/7fdOvIQg3heajI6\
+mWX53XGstyjDe6s6TJNJSkDOr05JETPCQ==:
 Signature-Key: other=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol911\
 OErq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519"
 ~~~
@@ -1292,6 +1345,10 @@ Section: Signature-Key Header / Unknown schemes + Label Consistency
 A verifier MUST NOT reject a request because a member it did not select names a scheme the verifier does not implement. This is the companion to unsupported_scheme and the one a naive implementation fails: without it no signer could offer a new scheme without breaking every verifier that lacks it, so none would, and the registry would have no path into deployment. Verify label 'sig' and ignore 'future'.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:RzDm+QhBQundq/5bvpY4kvgJ19OQ9nRsM7o9Ngs9w1iyUQAQYFkjX\
+0jPgWNeme7OGM6sTcvU8uCOYJ38qdB7CQ==:
 Signature-Key: sig=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol911OE\
 rq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519", future=quantum-widget;blob="\
 AAAA"
@@ -1306,6 +1363,56 @@ Section: Algorithm Determination
 A verifier that encounters a JWK whose kty it does not implement, including the AKP key type, MUST reject the key with defined error feedback and MUST NOT fail in an undefined manner. Absence of support for a key type is a reason to decline, not a parsing failure. An implementation without ML-DSA must report unsupported_algorithm here rather than throw. ML-DSA-44 key, 1312 byte public value per FIPS 204, carried as the AKP key type of RFC 9964 with the algorithm named by alg rather than derivable from the key structure.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=: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\
+=:
 Signature-Key: sig=jwks;url="https://client.example/pq.jwks";kid="pq-\
 1"
 ~~~
@@ -1338,6 +1445,10 @@ Section: Algorithm Determination, final paragraphs
 The JWKS holds an Ed25519 key and an ML-DSA-44 key, and the vector selects the Ed25519 one by kid. A verifier MUST select the member matching kid without requiring any other member to be usable, and MUST NOT fail because an unselected member names a kty or alg it does not implement. The failure mode is a library that hits the unknown kty while enumerating and abandons a perfectly good key sitting next to it. Exercising the unknown-value path routinely is what stops it rotting, in the spirit of RFC 9170. ML-DSA-44 key, 1312 byte public value per FIPS 204, carried as the AKP key type of RFC 9964 with the algorithm named by alg rather than derivable from the key structure.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:davv5G3TLa8Wa+77VXvpYXonzcLV7yf4kykdy6BwD0FZ8C2oFDa5M\
+Il/Sje9LTeUU0ZFQSwvk6us17y8zomsDw==:
 Signature-Key: sig=jwks;url="https://client.example/mixed.jwks";kid="\
 classic-1"
 ~~~
@@ -1380,6 +1491,8 @@ Every signature MUST cover the signature-key component, so that the signature pr
 ~~~ http-message
 Signature-Input: sig=("@method" "@authority" "@path");created=1791275\
 958
+Signature: sig=:VqQNGImkGtyhW0veUY+ePK2hT8ty9bx+WUbznC6tn9MK62pI7YLCc\
+CYFs4nxbR0X0sB0WiriJBxBTtdlg+P3CA==:
 Signature-Key: sig=hwk;kty="OKP";crv="Ed25519";x="fFWGSTH7SN1gol911OE\
 rq1sPFXT_LAG26zBtLm8ItK0";alg="Ed25519"
 ~~~
@@ -1393,6 +1506,10 @@ Section: unknown_key / Direct JWKS (jwks) discovery procedure
 The kid selects no member of the fetched JWKS. The verifier rejects with unknown_key rather than falling back to another member: a JWKS with one usable key is not licence to use it for a kid that does not name it. The server SHOULD re-fetch the JWKS once before answering, to handle a key that rotated between the signer publishing and the verifier reading.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:N+8EuJXrnlm4B936d4baeIyJlZkD901WZqJ+3taZpeXpjhFie6q4K\
+K2DWICeC2DLE01cQFPQk9jECNGPeDgDBw==:
 Signature-Key: sig=jwks;url="https://client.example/keys.jwks";kid="r\
 otated-away"
 ~~~
@@ -1430,6 +1547,10 @@ Section: JWT Confirmation Key (jwt) / JWT requirements
 The jwt scheme requires exp. The assertion carries a confirmation key, and exp is what bounds how long that key is accepted; without it the key remains acceptable indefinitely. A missing required claim is rejected before any signature work.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:T+Tp79XfJsQtVW27cubOQyj+JIx1jyKpjQtCP5YqxOzLGq1kDoyVT\
++39q3uI4bieezWgGn11lWk6LGFQM7iSDw==:
 Signature-Key: sig=jwt;jwt="eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFU\
 zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
@@ -1448,6 +1569,10 @@ Section: expired_jwt
 exp is now - 1, so the assertion expired one second before the instant this vector declares. Expiry is validated before the signature, so a verifier fails here without cryptographic work. Expressed relative to now (1791275958) rather than as a fixed past date, so the vector does not go stale.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:VK477AGfSLUD6RXHlw7tk6jv/gMno3SEG41a18VcjQ6/BSRS2GII1\
+myF7UGKu4gSlXInzPS8v9NusHp/gskKCQ==:
 Signature-Key: sig=jwt;jwt="eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFU\
 zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
@@ -1467,6 +1592,10 @@ Section: expired_jwt
 exp is now + 300, so the assertion is live at the declared instant and MUST be accepted. This is the positive control for the expiry pair: without it a verifier that rejects every assertion passes the expired case for the wrong reason.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:nG1ZH/MBK37z0t38uqKMy9KdkinPgyFlahqn/GVWktsdVZhVNv155\
+iZ0vIKSQcKvAW/bqBtqNpmewygJnDEoCw==:
 Signature-Key: sig=jwt;jwt="eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFU\
 zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
@@ -1486,6 +1615,10 @@ Section: clock_skew
 iat is now + 3600, further ahead of the verifier's clock than any reasonable validity window. The distinct code is what the caller needs: nothing about the assertion or the signature is wrong, the issuer's clock disagrees, and a fresh assertion from the same issuer carries the same skew. A future iat becomes acceptable with time, so the sender MAY wait and present the same assertion again. This is why clock_skew is not invalid_jwt or expired_jwt.
 
 ~~~ http-message
+Signature-Input: sig=("@method" "@authority" "@path" "signature-key")\
+;created=1791275958
+Signature: sig=:hTA59eJl8hFtg8LIkqtHevucG38iH7Z8SdmsJQDEZG6QhprtGIIpn\
+sNQtfBMqzePuXgvhg1B43O1x3e7AmK/AQ==:
 Signature-Key: sig=jwt;jwt="eyJ0eXAiOiJhYS10b2tlbitqd3QiLCJhbGciOiJFU\
 zI1NiIsImtpZCI6Imlzc3Vlci0xIn0.eyJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcG\
 xlIiwiZHdrIjoiZXhhbXBsZS1jb25maWd1cmF0aW9uIiwic3ViIjoiaW5zdGFuY2UtMTI\
